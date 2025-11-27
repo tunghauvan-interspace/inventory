@@ -105,6 +105,7 @@ Environment variables:
 | `QDRANT_PORT` | Qdrant server port | `6333` |
 | `MAX_TOKENS` | Maximum tokens for LLM | `512` |
 | `TEMPERATURE` | LLM temperature | `0.1` |
+| `HUGGING_FACE_HUB_TOKEN` | (Optional) Hugging Face token for gated models | - |
 
 ## Testing
 

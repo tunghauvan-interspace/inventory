@@ -13,8 +13,8 @@ logger = logging.getLogger(__name__)
 class LLMService:
     """Service class for interacting with vLLM server."""
 
-    # System prompt for structured JSON output
-    SYSTEM_PROMPT = """You are an API assistant. Given a natural language question about an inventory system, 
+    # Default system prompt for structured JSON output
+    DEFAULT_SYSTEM_PROMPT = """You are an API assistant. Given a natural language question about an inventory system, 
 respond with ONLY valid JSON in this exact format:
 {
     "api_endpoint": "<endpoint path>",
@@ -32,7 +32,14 @@ Available endpoints:
 
 Respond with ONLY the JSON, no explanation."""
 
-    def __init__(self, vllm_url: str, model: str, max_tokens: int = 512, temperature: float = 0.1):
+    def __init__(
+        self, 
+        vllm_url: str, 
+        model: str, 
+        max_tokens: int = 512, 
+        temperature: float = 0.1,
+        system_prompt: str = None
+    ):
         """Initialize LLM service.
         
         Args:
@@ -40,11 +47,13 @@ Respond with ONLY the JSON, no explanation."""
             model: Model identifier for vLLM
             max_tokens: Maximum tokens for completion
             temperature: Temperature for generation
+            system_prompt: Custom system prompt (optional, uses DEFAULT_SYSTEM_PROMPT if not provided)
         """
         self.vllm_url = vllm_url
         self.model = model
         self.max_tokens = max_tokens
         self.temperature = temperature
+        self.system_prompt = system_prompt or self.DEFAULT_SYSTEM_PROMPT
 
     def generate_structured_response(self, question: str) -> Dict[str, Any]:
         """Generate structured JSON response from natural language question.
@@ -59,7 +68,7 @@ Respond with ONLY the JSON, no explanation."""
             ValueError: If LLM response cannot be parsed as valid JSON
             requests.RequestException: If vLLM server is unavailable
         """
-        prompt = f"{self.SYSTEM_PROMPT}\n\nQuestion: {question}\n\nJSON Response:"
+        prompt = f"{self.system_prompt}\n\nQuestion: {question}\n\nJSON Response:"
 
         payload = {
             "model": self.model,
